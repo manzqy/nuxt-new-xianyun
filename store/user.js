@@ -9,8 +9,10 @@ export const state = () => {
 
 export const mutations = {
   setUserInfo(state, data) {
-    console.log('111', data)
     state.userInfo = data
+  },
+  clearUserInfo(state) {
+    state.userInfo = {}
   }
 }
 

@@ -29,15 +29,15 @@
             </el-col>
 
             <el-col :span="12" class="setfont">
-              <el-dropdown type="flex" align="middle" v-if="userInfo.token">
+              <el-dropdown type="flex" align="middle" v-if="userInfo.token" @command="exitLogin">
                 <span class="el-dropdown-link userInfo">
                   <img :src="`${$axios.defaults.baseURL}${userInfo.user.defaultAvatar}`" alt="">
                   <span>{{userInfo.user.nickname}}</span>
                   <i class="el-icon-caret-bottom el-icon--right"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item>个人信息</el-dropdown-item>
-                  <el-dropdown-item>退出</el-dropdown-item>
+                  <el-dropdown-item command="a">个人信息</el-dropdown-item>
+                  <el-dropdown-item command="b">退出</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
               <nuxt-link class="register" to="/user/login" v-else>登录 / 注册</nuxt-link>
@@ -54,6 +54,13 @@ export default {
   computed: {
     userInfo() {
       return this.$store.state.user.userInfo || {}
+    }
+  },
+  methods: {
+    exitLogin(command) {
+      if (command === 'b') {
+        this.$store.commit('user/clearUserInfo')
+      }
     }
   }
 }
