@@ -26,5 +26,14 @@ export const actions = {
       commit('setUserInfo', data)
       return data
     })
+  },
+  register({commit}, data) {
+    return this.$axios({
+      method: 'post',
+      url: '/accounts/register',
+      data
+    }).then(({data}) => {
+      commit('setUserInfo', data)
+    })
   }
 }

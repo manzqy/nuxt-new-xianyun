@@ -21,7 +21,7 @@
           <!-- 登录 -->
           <LoginForm v-if="currentIndex === 0"/>
           <!-- 注册 -->
-          <div v-if="currentIndex === 1">注册</div>
+          <Register v-if="currentIndex === 1"></Register>
         </div>
       </div>
     </el-row>
@@ -31,9 +31,11 @@
 
 <script>
 import LoginForm from '@/components/user/loginForm'
+import Register from '@/components/user/register'
 export default {
   components: {
-    LoginForm
+    LoginForm,
+    Register
   },
   data() {
     return {

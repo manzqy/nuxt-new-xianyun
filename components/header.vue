@@ -60,6 +60,10 @@ export default {
     exitLogin(command) {
       if (command === 'b') {
         this.$store.commit('user/clearUserInfo')
+        this.$message({
+            message: "退出成功",
+            type: "success"
+        })
       }
     }
   }
