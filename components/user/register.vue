@@ -147,7 +147,6 @@ export default {
   }
 }
 </script>
-
 <style lang="less" scoped>
 /deep/.el-button {
   width: 100%;

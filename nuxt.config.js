@@ -32,7 +32,8 @@ export default {
   */
   plugins: [
     '@/plugins/element-ui',
-    {src: '@/plugins/localstorage', ssr: false}
+    {src: '@/plugins/localstorage', ssr: false},
+    '@/plugins/axios'
   ],
   /*
   ** Nuxt.js dev-modules

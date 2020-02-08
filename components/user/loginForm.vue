@@ -51,9 +51,9 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.$message.success('登录成功')
           this.$store.dispatch('user/login', this.ruleForm2).then((res) => {
           setTimeout(() => {
+            this.$message.success('登录成功')
             this.$router.replace('/')
           }, 1000)
           })
