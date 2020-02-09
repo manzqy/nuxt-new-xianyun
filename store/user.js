@@ -35,5 +35,12 @@ export const actions = {
     }).then(({data}) => {
       commit('setUserInfo', data)
     })
+  },
+  sendCaptcha({commit}, data) {
+    return this.$axios({
+      method: 'post',
+      url: '/captchas',
+      data
+    })
   }
 }

@@ -32,7 +32,7 @@
               <el-dropdown type="flex" align="middle" v-if="userInfo.token" @command="exitLogin">
                 <span class="el-dropdown-link userInfo">
                   <img :src="`${$axios.defaults.baseURL}${userInfo.user.defaultAvatar}`" alt="">
-                  <span>{{userInfo.user.nickname}}</span>
+                  <span>{{ userInfo.user.nickname}}</span>
                   <i class="el-icon-caret-bottom el-icon--right"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
@@ -53,7 +53,7 @@
 export default {
   computed: {
     userInfo() {
-      return this.$store.state.user.userInfo || {}
+      return this.$store.state.user.userInfo || { token: '', user: {}}
     }
   },
   methods: {

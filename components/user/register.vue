@@ -4,8 +4,13 @@
       <el-input type="text" v-model="ruleForm2.username" auto-complete="off" placeholder="用户名/手机"></el-input>
     </el-form-item>
     <el-form-item style="margin-top: 15px;" prop="captcha">
-      <el-input placeholder="验证码" v-model="ruleForm2.captcha" auto-complete="off" class="input-with-select">
-        <el-button slot="append" @click="openCaptcha"> 发送验证码</el-button>
+      <el-input
+        placeholder="验证码"
+        v-model="ruleForm2.captcha"
+        auto-complete="off"
+        class="input-with-select"
+      >
+        <el-button slot="append" @click="openCaptcha">发送验证码</el-button>
       </el-input>
     </el-form-item>
     <el-form-item prop="nickname">
@@ -15,7 +20,12 @@
       <el-input type="password" v-model="ruleForm2.password" auto-complete="off" placeholder="密码"></el-input>
     </el-form-item>
     <el-form-item prop="cpassword">
-      <el-input type="password" v-model="ruleForm2.cpassword" auto-complete="off" placeholder="确认密码"></el-input>
+      <el-input
+        type="password"
+        v-model="ruleForm2.cpassword"
+        auto-complete="off"
+        placeholder="确认密码"
+      ></el-input>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="submitForm('ruleForm2')">注册</el-button>
@@ -67,6 +77,9 @@ export default {
       if (value === '') {
         callback(new Error('请输入密码'))
       } else {
+        if (this.ruleForm2.cpassword !== '') {
+          this.$refs.ruleForm2.validateField('cpassword')
+        }
         callback()
       }
     }
@@ -102,7 +115,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let {cpassword, ...data} = this.ruleForm2
+          let { cpassword, ...data } = this.ruleForm2
           this.$store.dispatch('user/register', data).then(() => {
             this.$message.success('登录成功,正在跳转中...')
             this.$router.replace('/')
@@ -118,30 +131,21 @@ export default {
         this.$alert('手机号不能为空', '提示', {
           confirmButtonText: '确定',
           type: 'warning',
-          callback: action => {
-          }
+          callback: action => {}
         })
       } else if (this.ruleForm2.username.length !== 11) {
         this.$alert('手机号格式不对', '提示', {
           confirmButtonText: '确定',
           type: 'warning',
-          callback: action => {
-          }
+          callback: action => {}
         })
       } else {
-        this.$alert('模拟手机验证码为：000000', '提示', {
-          confirmButtonText: '确定',
-          type: 'warning',
-          callback: action => {
-            this.$axios({
-              method: 'post',
-              url: '/captchas',
-              data: {tel: this.ruleForm2.username}
-            }).then(({data}) => {
-              this.ruleForm2.captcha = data.code
-            })
-          }
-        })
+        this.$store
+          .dispatch('user/sendCaptcha', { tel: this.ruleForm2.username })
+          .then(({ data }) => {
+            this.ruleForm2.captcha = data.code
+            this.$message.success('模拟手机验证码为:' + data.code)
+          })
       }
     }
   }
@@ -151,7 +155,10 @@ export default {
 /deep/.el-button {
   width: 100%;
 }
-/deep/.el-form-item.is-success .el-input__inner, .el-form-item.is-success .el-input__inner:focus, .el-form-item.is-success .el-textarea__inner, .el-form-item.is-success .el-textarea__inner:focus {
+/deep/.el-form-item.is-success .el-input__inner,
+.el-form-item.is-success .el-input__inner:focus,
+.el-form-item.is-success .el-textarea__inner,
+.el-form-item.is-success .el-textarea__inner:focus {
   border-color: #67c23a;
 }
 </style>
