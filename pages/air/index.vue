@@ -8,7 +8,7 @@
     <!-- 搜索广告栏 -->
     <el-row type="flex" justify="space-between">
       <!-- 搜索表单 -->
-        <SearchAir />
+      <SearchAir />
 
       <!-- banner广告 -->
       <div class="sale-banner">
@@ -38,7 +38,21 @@
     </h2>
 
     <!-- 特价机票 -->
-    <div class="air-sale"></div>
+    <div class="air-sale">
+      <el-row class="air-sale-pic" justify="space-between" type="flex">
+        <el-col :span="6" v-for="(item, index) in specialSale" :key="index">
+          <nuxt-link
+            :to="`/air/flights?departCity=${item.departCity}&departCode=${item.departCode}&destCity=${item.destCity}&destCode=${item.destCode}&departDate=${item.departDate}`"
+          >
+            <img :src="item.cover" alt />
+            <el-row class="layer-bar" type="flex" justify="space-between">
+              <span>{{item.departCity}} - {{item.destCity}}</span>
+              <span>￥{{item.price}}</span>
+            </el-row>
+          </nuxt-link>
+        </el-col>
+      </el-row>
+    </div>
   </section>
 </template>
 
@@ -49,7 +63,16 @@ export default {
     SearchAir
   },
   data() {
-    return {}
+    return {
+      specialSale: []
+    }
+  },
+  mounted() {
+    this.$axios({
+      url: '/airs/sale'
+    }).then(({ data }) => {
+      this.specialSale = data.data
+    })
   }
 }
 </script>
