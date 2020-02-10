@@ -55,6 +55,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 export default {
   data() {
     return {
@@ -89,28 +90,92 @@ export default {
         })
       }
     },
-    handleDepartSelect() {},
-    handleDestSelect() {},
-    handleDate() {},
-    handleSubmit() {},
+    handleDepartSelect(data) {
+      this.form.departCity = data.value
+      this.form.departCode = data.sort
+    },
+    handleDestSelect(data) {
+      this.form.destCity = data.value
+      this.form.destCode = data.sort
+    },
+    handleDate(data) {
+      this.form.departDate = moment(data).format('YYYY-MM-DD')
+    },
+    handleSubmit() {
+      console.log(this.form)
+      const rules = {
+        depart: {
+          value: this.form.departCity,
+          message: '请搜索出发城市'
+        },
+        dest: {
+          value: this.form.destCity,
+          message: '请搜索到达城市'
+        },
+        departTime: {
+          value: this.form.departDate,
+          message: '请选择出发日期'
+        }
+      }
+      let valid = true
+      Object.keys(rules).forEach(v => {
+        if (!valid) return
+        if (!rules[v].value) {
+          valid = false
+          this.$alert(rules[v].message, '提示', {
+            confirmButtonText: '确定',
+            callback: action => {
+            }
+          })
+        }
+      })
+      if (!valid) return
+      this.$router.push({
+        path: '/air/flights',
+        query: this.form
+      })
+    },
     handleReverse() {
-      const temp = this.form.departCity
-      this.form.departCity = this.form.destCity
-      this.form.destCity = temp
+      const {departCity, departCode, destCity, destCode} = this.form
+      this.form.departCity = destCity
+      this.form.departCode = destCode
+      this.form.destCity = departCity
+      this.form.destCode = departCode
     },
-    queryDepartSearch(value, callback) {
-      callback([
-        { value: '1' },
-        { value: '2' },
-        { value: '3' }
-      ])
+    async queryDepartSearch(value, callback) {
+      let arr = await this.querySearchAsync(this.form.departCity)
+      if (arr.length > 0) {
+        this.form.departCity = arr[0].value
+        this.form.departCode = arr[0].sort
+      }
+      callback(arr)
     },
-    queryDestSearch(value, callback) {
-      callback([
-        { value: '1' },
-        { value: '2' },
-        { value: '3' }
-      ])
+    async queryDestSearch(value, callback) {
+      let arr = await this.querySearchAsync(this.form.destCity)
+      if (arr.length > 0) {
+        this.form.destCity = arr[0].value
+        this.form.destCode = arr[0].sort
+      }
+      callback(arr)
+    },
+    querySearchAsync(keywords) {
+      return new Promise((resolve, reject) => {
+        if (!keywords) {
+          resolve([])
+        }
+        this.$axios({
+          url: '/airs/city',
+          params: { name: keywords }
+        }).then(({data}) => {
+          data = data.data.map(v => {
+            return {
+              ...v,
+              value: v.name.replace('市', '')
+            }
+          })
+          resolve(data)
+        })
+      })
     }
   }
 }
