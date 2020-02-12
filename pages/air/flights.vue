@@ -5,7 +5,16 @@
         <div></div>
         <FlightsHeader />
         <div>
-          <FlightsItem v-for="(item,index) in currentData" :key="item.id + index" :data="item"/>
+          <FlightsItem v-for="(item,index) in airList" :key="item.id + index" :data="item"/>
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="pageSizes"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="allData.total">
+          </el-pagination>
         </div>
       </div>
       <div class="aside"></div>
@@ -24,7 +33,17 @@ export default {
   data () {
     return {
       allData: {},
-      currentData: []
+      currentData: [],
+      currentPage: 1,
+      pageSizes: 5
+    }
+  },
+  computed: {
+    airList() {
+      if (this.currentData.length === 0) {
+        return []
+      }
+      return this.currentData.slice((this.currentPage - 1) * this.pageSizes, this.currentPage * this.pageSizes)
     }
   },
   methods: {
@@ -38,6 +57,12 @@ export default {
         this.allData = data
         this.currentData = data.flights
       })
+    },
+    handleSizeChange(data) {
+      this.pageSizes = data
+    },
+    handleCurrentChange(data) {
+      this.currentPage = data
     }
   },
   mounted () {
