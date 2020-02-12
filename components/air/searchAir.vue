@@ -1,9 +1,9 @@
 <template>
   <div class="search-form">
     <el-row type="flex" class="search-tab">
-      <span 
-        v-for="(item, index) in tabList" 
-        :key="index" 
+      <span
+        v-for="(item, index) in tabList"
+        :key="index"
         :class="{active: index === currentIndex}"
         @click="handleTabList(index)"
       >
@@ -31,21 +31,17 @@
         ></el-autocomplete>
       </el-form-item>
       <el-form-item label="出发时间">
-        <el-date-picker 
-          type="date" 
-          placeholder="请选择日期" 
-          @change="handleDate" 
+        <el-date-picker
+          type="date"
+          placeholder="请选择日期"
+          @change="handleDate"
           style="width: 100%"
           v-model="form.departDate"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label>
-        <el-button
-          type="primary"
-          style="width: 100%"
-          icon="el-icon-search"
-          @click="handleSubmit"
-        >搜索</el-button>
+        <el-button type="primary" style="width: 100%" icon="el-icon-search" @click="handleSubmit">搜索</el-button>
       </el-form-item>
       <div class="reverse">
         <span @click="handleReverse">换</span>
@@ -60,6 +56,11 @@ export default {
   data() {
     return {
       currentIndex: 0,
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 24 * 3600 * 1000
+        }
+      },
       tabList: [
         {
           icon: 'iconfont icondancheng',
@@ -85,8 +86,7 @@ export default {
         this.$alert('目前暂不支持往返，后续功能添加中', '提示', {
           confirmButtonText: '确定',
           type: 'warning',
-          callback: action => {
-          }
+          callback: action => {}
         })
       }
     },
@@ -124,8 +124,7 @@ export default {
           valid = false
           this.$alert(rules[v].message, '提示', {
             confirmButtonText: '确定',
-            callback: action => {
-            }
+            callback: action => {}
           })
         }
       })
@@ -136,7 +135,7 @@ export default {
       })
     },
     handleReverse() {
-      const {departCity, departCode, destCity, destCode} = this.form
+      const { departCity, departCode, destCity, destCode } = this.form
       this.form.departCity = destCity
       this.form.departCode = destCode
       this.form.destCity = departCity
@@ -166,7 +165,7 @@ export default {
         this.$axios({
           url: '/airs/city',
           params: { name: keywords }
-        }).then(({data}) => {
+        }).then(({ data }) => {
           data = data.data.map(v => {
             return {
               ...v,
