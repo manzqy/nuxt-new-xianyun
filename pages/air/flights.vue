@@ -3,6 +3,7 @@
     <el-row type="flex" justify="space-between">
       <div class="flights-content">
         <div></div>
+        <FlightsFilter :allData="allData" @setData = "setData"/>
         <FlightsHeader />
         <div>
           <FlightsItem v-for="(item,index) in airList" :key="item.id + index" :data="item"/>
@@ -25,14 +26,17 @@
 <script>
 import FlightsHeader from '@/components/air/flightsHeader'
 import FlightsItem from '@/components/air/flightsItem'
+import FlightsFilter from '@/components/air/flightsFilter'
 export default {
   components: {
     FlightsHeader,
-    FlightsItem
+    FlightsItem,
+    FlightsFilter
   },
   data () {
     return {
       allData: {},
+      cacheAllData: {},
       currentData: [],
       currentPage: 1,
       pageSizes: 5
@@ -52,10 +56,9 @@ export default {
         url: '/airs',
         params: this.$route.query
       }).then((res) => {
-        console.log(res.data)
         const data = res.data
         this.allData = data
-        this.currentData = data.flights
+        this.currentData = [...data.flights]
       })
     },
     handleSizeChange(data) {
@@ -63,10 +66,16 @@ export default {
     },
     handleCurrentChange(data) {
       this.currentPage = data
+    },
+    setData(arr) {
+      if (arr) {
+        this.currentPage = 1
+        this.allData.total = arr.length
+        this.currentData = arr
+      }
     }
   },
   mounted () {
-    console.log(this.$route)
     this.getAirList()
   }
 }

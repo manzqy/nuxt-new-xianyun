@@ -5,6 +5,7 @@
         <el-col :span="4" class="logo">
           <img src="http://157.122.54.189:9093/images/logo.jpg" alt="">
         </el-col>
+        
         <el-col :span="12">
           <el-row type="flex" align="middle" class="nav">
             <nuxt-link to="/">首页</nuxt-link>
@@ -13,6 +14,7 @@
             <nuxt-link to="/air">国内机票</nuxt-link>
           </el-row>
         </el-col>
+
         <el-col :span="8">
           <el-row type="flex" justify="end" align="middle">
             <el-col :span="6">
