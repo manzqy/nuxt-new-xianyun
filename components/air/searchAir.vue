@@ -129,6 +129,16 @@ export default {
         }
       })
       if (!valid) return
+      let airHistory = JSON.parse(localStorage.getItem('airSearch') || '[]')
+      airHistory = [...airHistory, this.form]
+      // 对象去重
+      const hash = {}
+      airHistory = airHistory.reduce((item, next) => {
+        console.log(next.departCity + next.destCity + next.departDate)
+        hash[next.departCity + next.destCity + next.departDate] ? '' : hash[next.departCity + next.destCity + next.departDate] = true && item.push(next)
+        return item
+      }, [])
+      localStorage.setItem('airSearch', JSON.stringify(airHistory))
       this.$router.push({
         path: '/air/flights',
         query: this.form

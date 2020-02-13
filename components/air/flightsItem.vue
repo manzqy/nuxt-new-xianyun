@@ -44,7 +44,7 @@
             </el-col>
             <el-col :span="5" class="price">￥{{item.par_price}}</el-col>
             <el-col :span="3" class="choose-button">
-              <el-button type="warning" size="mini">选定</el-button>
+              <el-button type="warning" size="mini" @click="chooseSeat(data.id, item.seat_xid)">选定</el-button>
               <p>剩余: {{item.discount}}</p>
             </el-col>
           </el-row>
@@ -103,6 +103,15 @@ export default {
   methods: {
     handleClick() {
       this.currentOpen = !this.currentOpen
+    },
+    chooseSeat(id, seat_xid) {
+      this.$router.push({
+        path: '/air/order',
+        query: {
+          id,
+          seat_xid
+        }
+      })
     }
   }
 }

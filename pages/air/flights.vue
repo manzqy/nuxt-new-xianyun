@@ -18,7 +18,9 @@
           </el-pagination>
         </div>
       </div>
-      <div class="aside"></div>
+      <div class="aside">
+        <FlightsAside />
+      </div>
     </el-row>
   </section>
 </template>
@@ -27,11 +29,13 @@
 import FlightsHeader from '@/components/air/flightsHeader'
 import FlightsItem from '@/components/air/flightsItem'
 import FlightsFilter from '@/components/air/flightsFilter'
+import FlightsAside from '@/components/air/flightsAside'
 export default {
   components: {
     FlightsHeader,
     FlightsItem,
-    FlightsFilter
+    FlightsFilter,
+    FlightsAside
   },
   data () {
     return {
@@ -74,6 +78,9 @@ export default {
         this.currentData = arr
       }
     }
+  },
+  watch: {
+    '$route': 'getAirList'
   },
   mounted () {
     this.getAirList()
