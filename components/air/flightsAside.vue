@@ -42,15 +42,13 @@
 
 <script>
 export default {
-  // computed: {
-  //   historyList() {
-  //     console.log(JSON.parse(localStorage.getItem('airSearch')))
-  //     return JSON.parse(localStorage.getItem('airSearch')) || []
-  //   }
-  // },
+  computed: {
+    historyList() {
+      return this.$store.state.air.airHistory || []
+    }
+  },
   data() {
     return {
-      historyList: []
     }
   },
   methods: {
@@ -60,9 +58,6 @@ export default {
         query: data
       })
     }
-  },
-  mounted() {
-    this.historyList = JSON.parse(localStorage.getItem('airSearch')) || []
   }
 }
 </script>

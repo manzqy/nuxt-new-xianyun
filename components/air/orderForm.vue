@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div class="air-column">
-      <h2>剩机人</h2>
+      <h2>乘机人</h2>
       <el-form class="member-info">
         <div
           class="member-info-item"
@@ -92,7 +92,7 @@ export default {
     return {
       creit: '',
       userInfo: [
-        {username: '', id: ''}
+        { username: '', id: '' }
       ],
       insurances: [],
       contactName: '',
@@ -164,9 +164,58 @@ export default {
         air: this.data.id,
         invoice: this.invoice
       }
-      console.log(submitData)
-      this.$message.success('订单正在生成中，请稍等...')
+      const rules = {
+        users: {
+          errMessage: '用户名或者身份证不能为空',
+          validator: () => {
+            let valid = true
+            submitData.users.forEach(v => {
+              if (!v.username || !v.id) {
+                valid = false
+              }
+            })
+            return valid
+          }
+        },
+        contactName: {
+          errMessage: '联系人姓名不能为空',
+          validator: () => {
+            if (!submitData.contactName) {
+              return false
+            }
+            return true
+          }
+        },
+        contactPhone: {
+          errMessage: '手机号不能为空',
+          validator: () => {
+            if (!submitData.contactPhone) {
+              return false
+            }
+            return true
+          }
+        },
+        captcha: {
+          errMessage: '手机验证码不能为空',
+          validator: () => {
+            if (!submitData.captcha) {
+              return false
+            }
+            return true
+          }
+        }
+      }
+      var valid = true
+      Object.keys(rules).forEach(v => {
+        if (!valid) return
+        valid = rules[v].validator()
+        if (!valid) {
+          this.$message.error(rules[v].errMessage)
+        }
+      })
+      if (!valid) return
       const {user} = this.$store.state
+      this.$message.success('订单正在生成中，请稍等...')
       this.$axios({
         method: 'post',
         url: '/airorders',

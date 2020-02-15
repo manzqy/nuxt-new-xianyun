@@ -56,6 +56,7 @@ export default {
   },
   methods: {
     getAirList() {
+      this.currentPage = 1,
       this.$axios({
         url: '/airs',
         params: this.$route.query
