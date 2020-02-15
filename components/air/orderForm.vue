@@ -223,10 +223,13 @@ export default {
         headers: {
           Authorization: `Bearer ${user.userInfo.token || ''}`
         }
-      }).then((res) => {
-        console.log(res)
+      }).then(({data}) => {
+        const {id} = data.data
         this.$router.push({
-          path: '/air/pay'
+          path: '/air/pay',
+          query: {
+            id
+          }
         })
       })
     },
