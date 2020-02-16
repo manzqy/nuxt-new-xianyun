@@ -25,7 +25,7 @@ export default {
   data () {
     return {
       infoData: {},
-      allPrice: ''
+      allPrice: {}
     }
   },
   mounted() {
@@ -34,13 +34,12 @@ export default {
       url: `/airs/${userId.id}`,
       params: {seat_xid: userId.seat_xid}
     }).then(({data}) => {
-      console.log(data)
       this.infoData = data
     })
   },
   methods: {
     recPrice(data) {
-      this.allPrice = data + ''
+      this.allPrice = data
     }
   }
 }

@@ -54,6 +54,10 @@ export default {
           this.$store.dispatch('user/login', this.ruleForm2).then((res) => {
           setTimeout(() => {
             this.$message.success('登录成功')
+            if (this.$route.query.returnUrl) {
+              this.$router.replace(this.$route.query.returnUrl)
+              return
+            }
             this.$router.replace('/')
           }, 1000)
           })

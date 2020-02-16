@@ -28,16 +28,16 @@
     <el-row type="flex" justify="space-between" class="info-bar">
       <span>成人机票</span>
       <span>￥{{data.seat_infos && data.seat_infos.org_settle_price}}</span>
-      <span>x1</span>
+      <span>x{{allPrice.len}}</span>
     </el-row>
     <el-row type="flex" justify="space-between" class="info-bar">
       <span>机建＋燃油</span>
       <span>¥{{data.airport_tax_audlet}}/人/单程</span>
-      <span>x1</span>
+      <span>x{{allPrice.len}}</span>
     </el-row>
     <el-row type="flex" justify="space-between" align="middle" class="info-bar">
       <span>应付总额：</span>
-      <span class="price">￥{{allPrice}}</span>
+      <span class="price">￥{{allPrice.price}}</span>
     </el-row>
   </div>
 </template>
@@ -50,8 +50,8 @@ export default {
       default: {}
     },
     allPrice: {
-      type: String,
-      default: ''
+      type: Object,
+      default: {}
     }
   },
 

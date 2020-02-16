@@ -41,7 +41,7 @@
           :key="item.type + index"
         >
           <el-checkbox
-            :label="`${item.type}：￥${item.price}/份×1  最高赔付${item.compensation}`"
+            :label="`${item.type}：￥${item.price}/份×${userInfo.length}  最高赔付${item.compensation}`"
             border
             @change="addInsuranceId(item.id)"
           ></el-checkbox>
@@ -109,11 +109,16 @@ export default {
       let price = 0
       let len = this.userInfo.length
       price += this.data.seat_infos.org_settle_price * len
-      this.insurances.forEach((v) => {
-        price += this.data.insurances[v - 1].price * len
+      this.data.insurances.forEach(v => {
+        if (this.insurances.indexOf(v.id) > -1) {
+          price += v.price * len
+        }
       })
       price += this.data.airport_tax_audlet * len
-      this.$emit('sendAllPrice', price)
+      this.$emit('sendAllPrice', {
+        price,
+        len
+      })
       return price
     }
   },

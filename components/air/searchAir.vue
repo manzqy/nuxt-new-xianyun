@@ -129,11 +129,14 @@ export default {
       })
       if (!valid) return
       let airHistory = this.$store.state.air.airHistory
-      airHistory = [...airHistory, this.form]
+      airHistory = [this.form, ...airHistory]
       // 对象去重
       const hash = {}
       airHistory = airHistory.reduce((item, next) => {
-        hash[next.departCity + next.destCity + next.departDate] ? '' : hash[next.departCity + next.destCity + next.departDate] = true && item.push(next)
+        hash[next.departCity + next.destCity + next.departDate]
+          ? ''
+          : (hash[next.departCity + next.destCity + next.departDate] =
+              true && item.push(next))
         return item
       }, [])
       this.$store.commit('air/addAirHistory', airHistory)
@@ -170,18 +173,17 @@ export default {
         if (!keywords) {
           resolve([])
         }
-        this.$axios({
-          url: '/airs/city',
-          params: { name: keywords }
-        }).then(({ data }) => {
-          data = data.data.map(v => {
-            return {
-              ...v,
-              value: v.name.replace('市', '')
-            }
+        this.$store
+          .dispatch('air/getCityName', { name: keywords })
+          .then(({ data }) => {
+            data = data.data.map(v => {
+              return {
+                ...v,
+                value: v.name.replace('市', '')
+              }
+            })
+            resolve(data)
           })
-          resolve(data)
-        })
       })
     }
   }
