@@ -75,8 +75,9 @@ export default {
       }
       this.currentIndex = index
     },
-    searchContent() {
-      console.log('ok')
+    //点击ico图标,完成了跳转到酒店首页上面去
+    searchContent() { 
+      this.$router.push('/hotel')
     }
   }
 }
