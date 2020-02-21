@@ -3,6 +3,7 @@
     <el-row>
       <el-col :span="17" class="detail-content">
         <!-- 面包屑导航 -->
+        <!-- 测试一下 -->
         <el-breadcrumb separator-class="el-icon-arrow-right">
           <el-breadcrumb-item :to="{ path: '/post' }">旅游攻略</el-breadcrumb-item>
           <el-breadcrumb-item>攻略详情</el-breadcrumb-item>
