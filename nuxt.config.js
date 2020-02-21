@@ -13,7 +13,7 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', type: 'text/css', href: '//at.alicdn.com/t/font_1168872_ehvuah8v57g.css'} // 新增全局字体样式
+      { rel: 'stylesheet', type: 'text/css', href: '//at.alicdn.com/t/font_1168872_ehvuah8v57g.css' } // 新增全局字体样式
     ]
   },
   /*
@@ -25,15 +25,22 @@ export default {
   */
   css: [
     'element-ui/lib/theme-chalk/index.css',
-    'assets/main.css'
+    'assets/main.css',
+    'quill/dist/quill.snow.css',
+    'quill/dist/quill.bubble.css',
+    'quill/dist/quill.core.css'
   ],
   /*
   ** Plugins to load before mounting the App
   */
   plugins: [
     '@/plugins/element-ui',
-    {src: '@/plugins/localstorage', ssr: false},
-    '@/plugins/axios'
+    { src: '@/plugins/localstorage', ssr: false },
+    '@/plugins/axios',
+    {
+      src: '~/plugins/vue-quill-editor',
+      ssr: false
+    }
   ],
   /*
   ** Nuxt.js dev-modules
