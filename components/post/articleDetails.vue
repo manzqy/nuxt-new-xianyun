@@ -88,6 +88,7 @@ export default {
         return this.cardContent.images[0]
       }
       return this.cardContent.images.slice(0, 3)
+      
     }
   },
   methods: {
