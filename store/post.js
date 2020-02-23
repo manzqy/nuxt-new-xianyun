@@ -5,13 +5,10 @@ export const state = () => {
   }
 }
 export const mutations = {
-  addFromPublish(state, data) {
+  addFromPublish (state, data) {
     state.formPublish = data
     if (state.formPublish.length > 5) {
       state.formPublish.length = 5
     }
   },
-  addListenData(state, data) {
-    state.listenData = data
-  }
 }
