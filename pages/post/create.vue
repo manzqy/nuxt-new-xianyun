@@ -1,185 +1,222 @@
 <template>
-  <div class="add">
-    <div style="fontSize:18px;fontWeight:700">发表新攻略</div>
-    <div style="color:#909399;fontSize:14px;margin:10px 0;">分享你的个人游记，让更多人看到哦！</div>
-    <el-input v-model="title"
-              placeholder="请输入标题"
-              style="margin:10px 0"></el-input>
-    <!-- 富文本框 -->
-    <div>
-      <div class="quill-editor"
-           :content="content"
-           @change="onEditorChange($event)"
-           @blur="onEditorBlur($event)"
-           @focus="onEditorFocus($event)"
-           @ready="onEditorReady($event)"
-           v-quill:myQuillEditor="editorOption"></div>
-    </div>
-    <!-- <input
-        type="file"
-        style="display: none;"
-        id="getFile"
-        @change="selectContentImg($event)"
-        accept="image/gif,image/jpeg,image/jpg,image/png"
-    >-->
-    <div style="fontSize:14px;margin:10px 0;">
-      选择城市
-      <el-autocomplete v-model="city"
-                       :fetch-suggestions="queryDepartSearch"
-                       placeholder="请搜索城市"
-                       @select="handleDepartSelect"
-                       class="el-autocomplete"></el-autocomplete>
-    </div>
-    <div>
-      <el-button type="primary"
-                 size="mini"
-                 @click="handleSubmit">发布</el-button>
-      <span style="fontSize:14px;">或者</span>
-      <span style="fontSize:14px;color:orange">保存到草稿</span>
-    </div>
+  <div class="post-create">
+    <el-row>
+      <el-col :span="18">
+        <h2>发表新攻略</h2>
+        <p class="create-desc">分享你的个人游记，让更多人看到哦！</p>
+        <el-input placeholder="请输入标题"
+                  v-model="form.title"
+                  clearable></el-input>
+        <div>
+          <div>
+            <Editor @quillEdit="quillEdit"
+                    :cleardata="clearEditor" />
+          </div>
+        </div>
+        <el-form label-width="80px"
+                 :model="form"
+                 class="create-search-city">
+          <el-form-item label="选择城市">
+            <el-autocomplete v-model="cityname"
+                             label="选择城市"
+                             placeholder="请搜索游玩城市"
+                             :fetch-suggestions="querySearchAsync"
+                             @select="handleSelect"></el-autocomplete>
+          </el-form-item>
+        </el-form>
+        <el-row class="create-submit">
+          <el-button type="primary"
+                     size="small"
+                     @click="articleSubmit">发布</el-button>
+          <span>或者</span>
+          <i @click="cacheContent">保存到草稿</i>
+        </el-row>
+      </el-col>
+      <el-col :span="6">
+        <CreateAside />
+      </el-col>
+    </el-row>
+    <input type="hidden"
+           :value="storeDataChange">
   </div>
 </template>
+
 <script>
+import Editor from '@/components/post/createContent'
+import moment from 'moment'
+import CreateAside from '@/components/post/createAside'
 export default {
+  components: {
+    Editor,
+    CreateAside
+  },
   data () {
     return {
-      content: "",
-      title: "",
-      city: "",
-      editorOption: {
-        // some quill options
-        modules: {
-          toolbar: {
-            container: [
-              ["bold", "italic", "underline", "strike"], // toggled buttons
-              ["blockquote", "code-block"],
-              ["link", "image"],
-
-              [{ header: 1 }, { header: 2 }], // custom button values
-              [{ list: "ordered" }, { list: "bullet" }],
-              [{ script: "sub" }, { script: "super" }], // superscript/subscript
-              [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
-              [{ direction: "rtl" }], // text direction
-
-              [{ size: ["small", false, "large", "huge"] }], // custom dropdown
-              [{ header: [1, 2, 3, 4, 5, 6, false] }],
-
-              [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-              [{ font: [] }],
-              [{ align: [] }],
-
-              ["clean"] // remove formatting button
-            ]
-          }
-        }
+      form: {
+        title: '',
+        content: '',
+        city: ''
+      },
+      cityname: '',
+      clearEditor: false
+    }
+  },
+  computed: {
+    storeDataChange () {
+      if (!this.$store.state.post.listenData) return ''
+      if (this.$store.state.post.listenData.isListen) {
+        const index = this.$store.state.post.listenData.index
+        const { cityname, date, ...form } = this.$store.state.post.formPublish[index]
+        this.form = form
+        this.cityname = cityname
+        setTimeout(() => {
+          this.$store.commit('post/addListenData', {
+            isListen: false
+          })
+        }, 1000)
       }
-    };
+      return ''
+    }
   },
   methods: {
-    // // 选择图片之后的处理
-    // selectContentImg(e) {
-    //     let file = e.target.files;
-    //         if (file.length > 0) {
-    //             let data = new FormData();
-    //             for (let item of file) {
-    //             data.append('files', item)
-    //             }
-    //             // 可以使用post方法上传文件到服务器
-    //             // 然后把返回的路径拼接好插入到内容里
-    //             uploadFile(data).then(res => {
-    //             this.content += `<img src="${res.imgUrl}" alt="内容图片">`;
-    //             })
-    //         }
-    //     },
-    // 获取城市名称
-    async queryDepartSearch (queryString, cb) {
-      let data = await this.querySearchAsync(queryString);
-      if (data.length > 0) {
-        this.city = data[0].value;
+    articleSubmit () {
+      if (!this.validData()) {
+        return
       }
-      cb(data);
-    },
-    querySearchAsync (queryString) {
-      return new Promise((resolve, reject) => {
-        if (queryString) {
-          this.$axios({
-            url: "/airs/city",
-            method: "get",
-            params: {
-              name: queryString
-            }
-          })
-            .then(result => {
-              let { data } = result.data;
-              data.forEach(item => {
-                item.value = item.name.substring(0, item.name.length - 1);
-              });
-              resolve(data);
-            })
-            .catch(err => {
-              reject(err);
-            });
-        } else {
-          resolve([]);
-        }
-      });
-    },
-    // 选中城市
-    handleDepartSelect (selected) {
-      this.city = selected.value;
-    },
-    // 发布文章
-    handleSubmit () {
       this.$axios({
-        url: "/posts",
-        method: "post",
-        data: {
-          city: this.city,
-          content: this.content,
-          title: this.title
-        },
+        method: 'post',
+        url: '/posts',
+        data: this.form,
         headers: {
-          Authorization: `Bearer ${this.$store.state.user.userInfo.token ||
-            "NO TOKEN"}`
+          Authorization: 'Bearer ' + this.$store.state.user.userInfo.token
         }
-      }).then(res => {
-        this.$message({
-          type: "info",
-          message: res.data.message
-        });
-        this.$router.push({
-          path: "/travelStrategy",
-          query: {
-            name: this.city
+      }).then((res) => {
+        this.$message.success(res.data.message)
+        this.form = {}
+        this.clearEditor = !this.clearEditor
+        this.cityname = ''
+      })
+    },
+    quillEdit (data) {
+      this.form.content = data
+    },
+    handleSelect (data) {
+      this.cityname = data.value
+      this.form.city = data.id
+    },
+    async querySearchAsync (query, callback) {
+      let arr = await this.querySearchAsyncCity(this.cityname)
+      if (arr.length > 0) {
+        this.cityname = arr[0].value
+        this.form.city = arr[0].id
+      }
+      callback(arr)
+    },
+    querySearchAsyncCity (keywords) {
+      return new Promise((resolve, reject) => {
+        if (!keywords) {
+          resolve([])
+        }
+        this.$store
+          .dispatch('air/getCityName', { name: keywords })
+          .then(({ data }) => {
+            data = data.data.map(v => {
+              v.value = v.name
+              return v
+            })
+            resolve(data)
+          })
+      })
+    },
+    validData () {
+      const rules = {
+        title: {
+          errMessage: '标题内容不能为空',
+          validator: () => {
+            return !!this.form.title
           }
-        })
-      });
+        },
+        content: {
+          errMessage: '文章内容不能为空',
+          validator: () => {
+            return !!this.form.content
+          }
+        },
+        city: {
+          errMessage: '请输入城市',
+          validator: () => {
+            return !!this.form.city
+          }
+        }
+      }
+      let valid = true
+      Object.keys(rules).forEach(v => {
+        if (!valid) return
+        valid = rules[v].validator()
+        if (!valid) {
+          this.$message.error(rules[v].errMessage)
+        }
+      })
+      return valid
     },
-    onEditorBlur (editor) {
-      // console.log("editor blur!", editor);
-    },
-    onEditorFocus (editor) {
-      // console.log("editor focus!", editor);
-    },
-    onEditorReady (editor) {
-      // console.log("editor ready!", editor);
-    },
-    onEditorChange ({ editor, html, text }) {
-      // console.log("editor change!", editor, html, text);
-      this.content = html;
+    cacheContent () {
+      if (!this.validData()) {
+        return
+      }
+      let formPublish = this.$store.state.post.formPublish
+      let date = moment(Date.now()).format('YYYY-MM-DD')
+      let cityname = this.cityname
+      const newForm = { ...this.form, date, cityname }
+      formPublish = [newForm, ...formPublish]
+      // 对象去重
+      let map = new Map()
+      formPublish.forEach(v => {
+        if (!map.has(`${v.title + v.content + v.city}`)) {
+          map.set(`${v.title + v.content + v.city}`, v)
+        }
+      })
+      formPublish = [...map.values()]
+      this.$store.commit('post/addFromPublish', formPublish)
+      // 数据清空
+      this.form = {}
+      this.clearEditor = !this.clearEditor
+      this.cityname = ''
     }
   }
-};
+}
 </script>
-<style scoped>
-.add {
-  width: 700px;
-  margin: 20px auto;
+
+<style lang="less" scoped>
+.post-create {
+  width: 1000px;
+  min-width: 1000px;
+  margin: 0 auto;
+  padding: 20px 0;
+  h2 {
+    font-weight: 400;
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  .create-desc {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 10px;
+  }
 }
-.quill-editor {
-  min-height: 400px;
-  max-height: 600px;
-  overflow-y: auto;
+.create-search-city {
+  width: 300px;
 }
-/* 11 */
+.create-submit {
+  font-size: 14px;
+  span {
+    margin: 0 10px;
+  }
+  i {
+    color: orange;
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
 </style>
